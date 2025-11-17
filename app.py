@@ -645,6 +645,8 @@ def init_db_command():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    # For public access, use host='0.0.0.0' to bind to all network interfaces
+    # For production, set debug=False and use a proper WSGI server (like Gunicorn)
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
 
