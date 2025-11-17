@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="mb-4 text-center">
+    <h2 class="fw-semibold">Order food from top restaurants</h2>
+    <p class="text-muted mb-0">Browse restaurants, explore their menus, and get food delivered to your doorstep.</p>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-5 g-4">
+    {% for restaurant in restaurants %}
+      <div class="col">
+        <div class="card restaurant-card h-100">
+          {% if restaurant.image_url %}
+            <img
+              src="{{ restaurant.image_url }}"
+              class="card-img-top"
+              alt="{{ restaurant.name }}"
+              style="height: 180px; object-fit: cover;"
+            />
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ restaurant.name }}</h5>
+            {% if restaurant.cuisine %}
+              <span class="badge bg-secondary mb-2">{{ restaurant.cuisine }}</span>
+            {% endif %}
+            <p class="card-text text-muted small">
+              {{ restaurant.description or '' }}
+            </p>
+          </div>
+          <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('restaurant_detail', restaurant_id=restaurant.id) }}" class="btn btn-sm btn-primary">
+              View Menu
+            </a>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="text-muted">No restaurants found.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+

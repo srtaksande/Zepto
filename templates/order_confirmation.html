@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-body text-center">
+          <h3 class="fw-semibold mb-2">Order Confirmed!</h3>
+          <p class="text-muted mb-1">
+            Your order ID is <strong>#{{ order.id }}</strong>.
+          </p>
+          <p class="text-muted mb-3">
+            It will be delivered to:
+          </p>
+          <p class="mb-3">
+            <strong>{{ order.customer_name }}</strong><br />
+            {{ order.delivery_address }}
+          </p>
+          <p class="mb-2">
+            <strong>Total Paid:</strong>
+            ₹ {{ '%.2f'|format(order.total_amount) }}
+          </p>
+          <p class="mb-3">
+            <strong>Payment Method:</strong>
+            {{ order.payment_method }}
+          </p>
+          <a href="{{ url_for('home') }}" class="btn btn-primary">
+            Order more food
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+

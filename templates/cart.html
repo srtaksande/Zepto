@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h3 class="fw-semibold mb-3">Your Cart</h3>
+
+  {% if items %}
+    <form method="post" action="{{ url_for('update_cart') }}">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th style="width: 120px;">Qty</th>
+              <th>Price</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in items %}
+              <tr>
+                <td>
+                  <strong>{{ row.item.name }}</strong><br />
+                  <small class="text-muted">{{ row.item.restaurant.name }}</small>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <input
+                      type="number"
+                      name="qty_{{ row.item.id }}"
+                      class="form-control form-control-sm"
+                      min="0"
+                      value="{{ row.quantity }}"
+                    />
+                    <form method="post" action="{{ url_for('remove_cart_item', item_id=row.item.id) }}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Delete
+                      </button>
+                    </form>
+                  </div>
+                </td>
+                <td>₹ {{ '%.2f'|format(row.item.price) }}</td>
+                <td>₹ {{ '%.2f'|format(row.line_total) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex gap-2">
+          <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">
+            Continue browsing
+          </a>
+          <form
+            method="post"
+            action="{{ url_for('empty_cart') }}"
+            onsubmit="return confirm('Are you sure you want to empty the entire cart?');"
+          >
+            <button type="submit" class="btn btn-outline-danger">
+              Empty Cart
+            </button>
+          </form>
+        </div>
+        <div class="text-end">
+          <p class="mb-1">
+            <strong>Total:</strong>
+            ₹ {{ '%.2f'|format(total_amount) }}
+          </p>
+          <div class="d-flex gap-2 justify-content-end">
+            <button type="submit" class="btn btn-outline-primary">
+              Update Cart
+            </button>
+            <a href="{{ url_for('checkout') }}" class="btn btn-primary">
+              Proceed to Checkout
+            </a>
+          </div>
+        </div>
+      </div>
+    </form>
+  {% else %}
+    <p class="text-muted">Your cart is empty.</p>
+    <a href="{{ url_for('home') }}" class="btn btn-primary">Browse restaurants</a>
+  {% endif %}
+{% endblock %}
+
+

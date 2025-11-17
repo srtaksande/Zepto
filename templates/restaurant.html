@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h3 class="fw-semibold mb-1">{{ restaurant.name }}</h3>
+      {% if restaurant.cuisine %}
+        <span class="badge bg-secondary">{{ restaurant.cuisine }}</span>
+      {% endif %}
+      {% if restaurant.description %}
+        <p class="text-muted mt-2 mb-0">{{ restaurant.description }}</p>
+      {% endif %}
+    </div>
+    <div class="col-md-4">
+      <form method="get" class="row g-2">
+        <div class="col-12 col-md-3">
+          <label class="form-label small mb-1">Veg / Non-Veg</label>
+          <select name="veg" class="form-select form-select-sm">
+            <option value="all" {% if veg_filter == 'all' %}selected{% endif %}>All</option>
+            <option value="veg" {% if veg_filter == 'veg' %}selected{% endif %}>Veg</option>
+            <option value="nonveg" {% if veg_filter == 'nonveg' %}selected{% endif %}>Non-Veg</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-3">
+          <label class="form-label small mb-1">Course</label>
+          <select name="category" class="form-select form-select-sm">
+            <option value="all" {% if category_filter == 'all' %}selected{% endif %}>All</option>
+            {% for cat in categories %}
+              <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-12 col-md-3">
+          <label class="form-label small mb-1">Price</label>
+          <select name="price" class="form-select form-select-sm">
+            <option value="all" {% if price_filter == 'all' %}selected{% endif %}>All</option>
+            <option value="lt200" {% if price_filter == 'lt200' %}selected{% endif %}>< ₹ 200</option>
+            <option value="bt200_400" {% if price_filter == 'bt200_400' %}selected{% endif %}>₹ 200 - 400</option>
+            <option value="gt400" {% if price_filter == 'gt400' %}selected{% endif %}>> ₹ 400</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-3">
+          <label class="form-label small mb-1">Show</label>
+          <select name="limit" class="form-select form-select-sm">
+            {% for option in limit_options %}
+              <option value="{{ option }}" {% if limit_filter == option %}selected{% endif %}>
+                {% if option == 'all' %}All{% else %}{{ option }} items{% endif %}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-12 d-flex justify-content-end mt-1">
+          <button type="submit" class="btn btn-sm btn-outline-primary me-2">Apply</button>
+          <a href="{{ url_for('restaurant_detail', restaurant_id=restaurant.id) }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    {% for item in items %}
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-body d-flex">
+            <div class="flex-grow-1">
+              <h6 class="card-title mb-1">
+                {% if item.is_veg %}
+                  <span class="badge bg-success me-1">Veg</span>
+                {% else %}
+                  <span class="badge bg-danger me-1">Non-veg</span>
+                {% endif %}
+                {{ item.name }}
+              </h6>
+              {% if item.category %}
+                <span class="badge bg-light text-muted border small mb-1">{{ item.category }}</span>
+              {% endif %}
+              {% if item.description %}
+                <p class="text-muted small mb-2">{{ item.description }}</p>
+              {% endif %}
+              <p class="fw-semibold mb-0">₹ {{ '%.2f'|format(item.price) }}</p>
+            </div>
+            <div class="ms-3 d-flex align-items-end">
+              {% set already_added = (item.id|string) in cart_item_ids %}
+              <form method="post" action="{{ url_for('add_to_cart') }}" class="text-end">
+                <input type="hidden" name="menu_item_id" value="{{ item.id }}" />
+                <input type="hidden" name="mode" value="{% if already_added %}update{% else %}add{% endif %}" />
+                <div class="input-group input-group-sm mb-2">
+                  <span class="input-group-text">Qty</span>
+                  <input
+                    type="number"
+                    name="quantity"
+                    class="form-control"
+                    min="1"
+                    value="{{ cart_quantities.get(item.id, 1) }}"
+                  />
+                </div>
+                <button type="submit" class="btn btn-sm w-100 {% if already_added %}btn-success{% else %}btn-primary{% endif %}">
+                  {% if already_added %}Update{% else %}Add{% endif %}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="text-muted">No items available.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+
